@@ -1,0 +1,11 @@
+g-mean - http://contrib.scikit-learn.org/imbalanced-learn/stable/generated/imblearn.metrics.geometric_mean_score.html
+
+f-measure - http://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html
+
+http://scikit-learn.org/stable/modules/tree.html
+
+http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html
+
+http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
+
+https://docs.google.com/a/cin.ufpe.br/viewer?a=v&pid=sites&srcid=Y2luLnVmcGUuYnJ8bXVsdGlwbGUtY2xhc3NpZmllci1zeXN0ZW18Z3g6NjU0MWI0Y2RjYmZkNTc0NQ
