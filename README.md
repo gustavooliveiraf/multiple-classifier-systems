@@ -17,7 +17,7 @@ This project was built on Python 3.5.2.
 ### Activate Environment
 
 ```
-source mlproject/bin/activate
+source smcProject/bin/activate
 
 ```
 
