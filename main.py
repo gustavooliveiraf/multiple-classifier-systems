@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import itertools
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
@@ -17,6 +19,8 @@ class Main:
     def __init__(self, data):
         self.data = data
         self.metrics_length = 4
+        self.classifiers_length = 2
+        self.train_length = 5
 
     def calc_metrics(self, k_fold, n_times, pool_size, max_samples, max_features, bootstrap, bootstrap_features):
         y = np.array(self.data["CLASS"])
@@ -34,6 +38,7 @@ class Main:
                 x_train, x_test = x[train_index], x[test_index]
                 y_train, y_test = y[train_index], y[test_index]
 
+                
                 BaggingClassifierDecisionTree = BaggingClassifier(tree.DecisionTreeClassifier(), pool_size, max_samples, max_features, bootstrap, bootstrap_features)
                 BaggingClassifierDecisionTree.fit(x_train, y_train)
                 decisionTreeTemp[0].append(BaggingClassifierDecisionTree.score(x_test, y_test))
@@ -41,12 +46,15 @@ class Main:
                 decisionTreeTemp[2].append(geometric_mean_score(BaggingClassifierDecisionTree.predict(x_test), y_test))
                 decisionTreeTemp[3].append(f1_score(BaggingClassifierDecisionTree.predict(x_test), y_test))
 
+                
                 BaggingClassifierPerceptron = BaggingClassifier(linear_model.Perceptron(max_iter=5), pool_size, max_samples, max_features, bootstrap, bootstrap_features)
                 BaggingClassifierPerceptron.fit(x_train, y_train)
                 perceptronTemp[0].append(BaggingClassifierPerceptron.score(x_test, y_test))
                 perceptronTemp[1].append(roc_auc_score(BaggingClassifierPerceptron.predict(x_test), y_test))
                 perceptronTemp[2].append(geometric_mean_score(BaggingClassifierPerceptron.predict(x_test), y_test))
                 perceptronTemp[3].append(f1_score(BaggingClassifierPerceptron.predict(x_test), y_test))
+
+                # print("---------------------- fold " + str(i) + " --------------------------------")
 
             decisionTree[0].append(np.mean(decisionTreeTemp[0]))
             decisionTree[1].append(np.mean(decisionTreeTemp[1]))
@@ -58,33 +66,73 @@ class Main:
             perceptron[2].append(np.mean(perceptronTemp[2]))
             perceptron[3].append(np.mean(perceptronTemp[3]))
 
-            print("---------------------------" + str(i) + "--------------------------------")
+        return (decisionTree, perceptron)
 
-        return (decisionTree, perceptronTemp)
+    def plot(self, bagging, random_subspace):
+        barWidth = 0.1
+        # bars1 = list(itertools.chain(*bagging[0][0]))
+        # bars2 = list(itertools.chain(*bagging[0][1]))
+        bars = []
+        print(bagging)
+        print()
+        for i in range(self.train_length):
+            print(bagging[0][i])
+            bars.append(list(itertools.chain(*bagging[0][i])))
+            print(bars[i])
+            print()
+        
+        # The x position of bars
+        r = [np.arange((len(bars[0]))) for x in range(self.train_length)]
+        for i in range(1, self.train_length):
+            r[i] = [x + barWidth for x in r[i-1]]
 
-def loop(modelo, train_length):
+        for i in range(self.train_length):
+        # Create blue bars
+            plt.bar(r[i], bars[i], width = barWidth, color = 'blue', edgecolor = 'black', label='poacee') # , yerr=yer2, capsize=7,
+        
+        # Create cyan bars
+        # plt.bar(r2, bars2, width = barWidth, color = 'cyan', edgecolor = 'black', label='sorgho') # , yerr=yer2, capsize=7,
+        
+        # general layout
+        # plt.xticks([r + barWidth/2 for r in range(len(bars[0]))], ['50%', '60%', '70%', '80%', '90%', '100%'])
+        plt.ylabel('accuracy')
+        plt.legend()
+        
+        # Show graphic
+        plt.show()
+
+def test(self):
     max_samples = 0.5
     max_features = 1
-    for _ in range(train_length):
-        k = modelo.calc_metrics(10, 10, 100, max_samples, 1.0, True, True)
-        print(k)
+    bagging = ([[] for x in range(self.metrics_length)], [[] for x in range(self.metrics_length)])
+    random_subspace = ([[] for x in range(self.metrics_length)], [[] for x in range(self.metrics_length)])
 
-        k = modelo.calc_metrics(10, 10, 100, max_samples, max_features/2, True, True)
-        print(k)
 
+    for _ in range(self.train_length):
+        print("=========== para " + str(max_samples * 100) + "% ===========")
+
+        bagging_temp = modelo.calc_metrics(10, 1, 100, max_samples, 1.0, True, True)
+        random_subspace_temp = modelo.calc_metrics(10, 1, 100, max_samples, max_features/2, True, True)
+        for i in range(self.classifiers_length):
+            for j in range(self.metrics_length):
+                bagging[i][j].append(bagging_temp[i][j])
+                random_subspace[i][j].append(random_subspace_temp[i][j])      
         max_samples += 0.1
 
-        print(_)
+    self.plot(bagging, random_subspace)
 
 
 
 
-#TESTE
-df = pd.read_csv('./entrada.csv')
+# TESTE
+# df = df.drop(axis=1, columns = ["ID"])
+# df = pd.read_csv('./entrada.csv')
+# df = pd.read_csv('./cm1.csv')
+# df = pd.read_csv('./jm1.csv')
+df = pd.read_csv('./kc2.csv')
 
-df = df.drop(axis=1, columns = ["ID"])
 enc = LabelEncoder()
 df.CLASS = enc.fit_transform(df.CLASS)
 
 modelo = Main(df)
-loop(modelo, 6)
+test(modelo)
