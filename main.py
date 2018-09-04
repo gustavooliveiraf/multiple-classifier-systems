@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
+import seaborn as max_samples
+sns.set()
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
@@ -20,7 +22,7 @@ class Main:
         self.data = data
         self.metrics_length = 4
         self.classifiers_length = 2
-        self.train_length = 5
+        self.train_length = 6
 
     def calc_metrics(self, k_fold, n_times, pool_size, max_samples, max_features, bootstrap, bootstrap_features):
         y = np.array(self.data["CLASS"])
