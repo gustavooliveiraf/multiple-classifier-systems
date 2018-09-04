@@ -44,10 +44,7 @@ class Main:
 
                 x_train, y_train = SMOTE().fit_sample(X_train, Y_train)
                 x_test, y_test = SMOTE().fit_sample(X_test, Y_test)
-
-                # print("-------")
                 # print(format(Counter(y_test)))
-
                 
                 BaggingClassifierDecisionTree = BaggingClassifier(tree.DecisionTreeClassifier(), pool_size, max_samples, max_features, bootstrap, bootstrap_features)
                 BaggingClassifierDecisionTree.fit(x_train, y_train)
@@ -87,7 +84,7 @@ class Main:
             r[i] = [x + barWidth for x in r[i-1]]
 
         sns.set()
-        rcParams['figure.figsize'] = 12,3
+        rcParams['figure.figsize'] = 8,3
 
         color = ['blue', 'red', 'green', 'cyan']
         label = ['t-acerto', 'AUC', 'g-mean', 'f-measure']
@@ -95,10 +92,10 @@ class Main:
             plt.bar(r[i], bars[i], width = barWidth, color = color[i], edgecolor = 'black', label=label[i])
 
         plt.xticks([r + barWidth + 0.05 for r in range(len(bars[0])+2)], ['50%', '60%', '70%', '80%', '90%', '100%', '', ''])
-        plt.ylabel('Medidas')
         plt.xlabel('Porcentagem do conjunto de treinamento')
+        plt.ylabel('Medidas')
         plt.legend()
-        plt.ylim([0, 1.18])
+        plt.ylim([0, 1.19])
         plt.show()
 
 def test(self):
