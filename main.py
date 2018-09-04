@@ -1,12 +1,14 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.pylab import rcParams
 import itertools
 import seaborn as sns
-sns.set()
+from collections import Counter
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
+from imblearn.over_sampling import SMOTE 
 
 from sklearn import tree
 from sklearn import linear_model
@@ -37,8 +39,14 @@ class Main:
             perceptronTemp = [[] for x in range(self.metrics_length)]
 
             for train_index, test_index in skf.split(x, y):
-                x_train, x_test = x[train_index], x[test_index]
-                y_train, y_test = y[train_index], y[test_index]
+                X_train, X_test = x[train_index], x[test_index]
+                Y_train, Y_test = y[train_index], y[test_index]
+
+                x_train, y_train = SMOTE().fit_sample(X_train, Y_train)
+                x_test, y_test = SMOTE().fit_sample(X_test, Y_test)
+
+                # print("-------")
+                # print(format(Counter(y_test)))
 
                 
                 BaggingClassifierDecisionTree = BaggingClassifier(tree.DecisionTreeClassifier(), pool_size, max_samples, max_features, bootstrap, bootstrap_features)
@@ -78,14 +86,19 @@ class Main:
         for i in range(1, self.metrics_length):
             r[i] = [x + barWidth for x in r[i-1]]
 
+        sns.set()
+        rcParams['figure.figsize'] = 12,3
+
         color = ['blue', 'red', 'green', 'cyan']
         label = ['t-acerto', 'AUC', 'g-mean', 'f-measure']
         for i in range(self.metrics_length):
             plt.bar(r[i], bars[i], width = barWidth, color = color[i], edgecolor = 'black', label=label[i])
 
-        plt.xticks([r + barWidth for r in range(len(bars[0]))], ['50%', '60%', '70%', '80%', '90%', '100%'])
-        plt.ylabel('accuracy')
+        plt.xticks([r + barWidth + 0.05 for r in range(len(bars[0])+2)], ['50%', '60%', '70%', '80%', '90%', '100%', '', ''])
+        plt.ylabel('Medidas')
+        plt.xlabel('Porcentagem do conjunto de treinamento')
         plt.legend()
+        plt.ylim([0, 1.18])
         plt.show()
 
 def test(self):
@@ -107,8 +120,6 @@ def test(self):
         max_samples = round(max_samples + 0.1, 1)
     print("=========== plotando ===========")
     self.plot(bagging, random_subspace)
-
-
 
 
 # TESTE
