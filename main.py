@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
-import seaborn as max_samples
+import seaborn as sns
 sns.set()
 
 from sklearn.model_selection import StratifiedKFold
@@ -56,8 +56,6 @@ class Main:
                 perceptronTemp[2].append(geometric_mean_score(BaggingClassifierPerceptron.predict(x_test), y_test))
                 perceptronTemp[3].append(f1_score(BaggingClassifierPerceptron.predict(x_test), y_test))
 
-                # print("---------------------- fold " + str(i) + " --------------------------------")
-
             decisionTree[0].append(np.mean(decisionTreeTemp[0]))
             decisionTree[1].append(np.mean(decisionTreeTemp[1]))
             decisionTree[2].append(np.mean(decisionTreeTemp[2]))
@@ -76,13 +74,16 @@ class Main:
         for i in range(self.metrics_length):
             bars.append(list(itertools.chain(*bagging[0][i])))
         
-        r = [np.arange((len(bars[0]))) for x in range(self.train_length)]
-        for i in range(1, self.train_length):
+        r = [np.arange((len(bars[0]))) for x in range(self.metrics_length)]
+        for i in range(1, self.metrics_length):
             r[i] = [x + barWidth for x in r[i-1]]
 
+        color = ['blue', 'red', 'green', 'cyan']
+        label = ['t-acerto', 'AUC', 'g-mean', 'f-measure']
         for i in range(self.metrics_length):
-            plt.bar(r[i], bars[i], width = barWidth, color = 'blue', edgecolor = 'black', label='poacee')
+            plt.bar(r[i], bars[i], width = barWidth, color = color[i], edgecolor = 'black', label=label[i])
 
+        plt.xticks([r + barWidth for r in range(len(bars[0]))], ['50%', '60%', '70%', '80%', '90%', '100%'])
         plt.ylabel('accuracy')
         plt.legend()
         plt.show()
@@ -95,7 +96,7 @@ def test(self):
 
 
     for _ in range(self.train_length):
-        print("=========== para " + str(max_samples * 100) + "% ===========")
+        print("=========== " + str(round(max_samples * 100)) + "% ===========")
 
         bagging_temp = modelo.calc_metrics(10, 1, 100, max_samples, 1.0, True, True)
         random_subspace_temp = modelo.calc_metrics(10, 1, 100, max_samples, max_features/2, True, True)
@@ -103,8 +104,8 @@ def test(self):
             for j in range(self.metrics_length):
                 bagging[i][j].append(bagging_temp[i][j])
                 random_subspace[i][j].append(random_subspace_temp[i][j])      
-        max_samples += 0.1
-
+        max_samples = round(max_samples + 0.1, 1)
+    print("=========== plotando ===========")
     self.plot(bagging, random_subspace)
 
 
