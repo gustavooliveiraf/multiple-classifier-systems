@@ -70,35 +70,19 @@ class Main:
 
     def plot(self, bagging, random_subspace):
         barWidth = 0.1
-        # bars1 = list(itertools.chain(*bagging[0][0]))
-        # bars2 = list(itertools.chain(*bagging[0][1]))
         bars = []
-        print(bagging)
-        print()
-        for i in range(self.train_length):
-            print(bagging[0][i])
+        for i in range(self.metrics_length):
             bars.append(list(itertools.chain(*bagging[0][i])))
-            print(bars[i])
-            print()
         
-        # The x position of bars
         r = [np.arange((len(bars[0]))) for x in range(self.train_length)]
         for i in range(1, self.train_length):
             r[i] = [x + barWidth for x in r[i-1]]
 
-        for i in range(self.train_length):
-        # Create blue bars
-            plt.bar(r[i], bars[i], width = barWidth, color = 'blue', edgecolor = 'black', label='poacee') # , yerr=yer2, capsize=7,
-        
-        # Create cyan bars
-        # plt.bar(r2, bars2, width = barWidth, color = 'cyan', edgecolor = 'black', label='sorgho') # , yerr=yer2, capsize=7,
-        
-        # general layout
-        # plt.xticks([r + barWidth/2 for r in range(len(bars[0]))], ['50%', '60%', '70%', '80%', '90%', '100%'])
+        for i in range(self.metrics_length):
+            plt.bar(r[i], bars[i], width = barWidth, color = 'blue', edgecolor = 'black', label='poacee')
+
         plt.ylabel('accuracy')
         plt.legend()
-        
-        # Show graphic
         plt.show()
 
 def test(self):
